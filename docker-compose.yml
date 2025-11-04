@@ -1,0 +1,36 @@
+services:
+  ml-service:
+    build:
+      context: ./ml-service-python
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./temp:/app/temp
+      - ./models:/app/models
+    networks:
+      - synthetic-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  backend:
+    build:
+      context: ./backend-java
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ML_SERVICE_URL=http://ml-service:8000
+    depends_on:
+      ml-service:
+        condition: service_healthy
+    networks:
+      - synthetic-network
+
+networks:
+  synthetic-network:
+    driver: bridge

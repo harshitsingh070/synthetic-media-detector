@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synthetic Media Detector</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">
+                <i class="fas fa-shield-alt"></i>
+                Synthetic Media Detector
+            </h1>
+            <p class="subtitle">Advanced AI-powered detection for deepfakes and generated content</p>
+        </header>
+
+        <!-- Upload Section -->
+        <section id="uploadSection" class="upload-section">
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-content">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h3>Drag &amp; Drop your Media File</h3>
+                    <p>Images, Audio, or Video files supported</p>
+                    <button class="browse-btn" id="browseBtn">
+                        <i class="fas fa-folder-open"></i>
+                        Choose Files
+                    </button>
+                    <div class="supported-formats">
+                        <span><i class="fas fa-image"></i> Images</span>
+                        <span><i class="fas fa-music"></i> Audio</span>
+                        <span><i class="fas fa-video"></i> Video</span>
+                    </div>
+                </div>
+            </div>
+            <input type="file" id="fileInput" style="display: none;" accept="image/*,audio/*,video/*">
+        </section>
+
+        <!-- Analysis Section -->
+        <section id="analysisSection" class="analysis-section" style="display: none;">
+            <div class="file-info">
+                <div class="file-preview">
+                    <i id="fileTypeIcon" class="fas fa-file file-icon"></i>
+                    <img id="imagePreview" class="preview-image" style="display: none;">
+                </div>
+                <div class="file-details">
+                    <h3 id="fileName">filename.ext</h3>
+                    <span id="fileSize" class="file-size">0 KB</span>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+                <div id="progressText" class="progress-text">Uploading...</div>
+                <div id="progressPercent" class="progress-percent">0%</div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="results-section" style="display: none;">
+            <div class="results-container">
+                <!-- File Header -->
+                <div class="file-header">
+                    <div class="file-info-compact">
+                        <i id="resultFileIcon" class="file-icon-small"></i>
+                        <span id="resultFileName">filename.ext</span>
+                    </div>
+                </div>
+
+                <!-- Main Results Layout -->
+                <div class="results-layout">
+                    <!-- Left Column -->
+                    <div class="results-left">
+                        <!-- Verdict Badge -->
+                        <div class="verdict-container">
+                            <div id="verdictBadge" class="verdict-badge">
+                                <span id="verdictText">FAKE</span>
+                            </div>
+                        </div>
+
+                        <!-- Confidence Section -->
+<div class="confidence-section">
+    <div class="confidence-circle">
+        <div class="circle-progress">
+            <svg class="progress-ring" width="160" height="160" viewBox="0 0 160 160">
+                <circle class="progress-ring__circle-bg" 
+                        cx="80" cy="80" r="70" 
+                        stroke-width="12">
+                </circle>
+                <circle id="progressCircle" 
+                        class="progress-ring__circle" 
+                        cx="80" cy="80" r="70" 
+                        stroke-width="12"
+                        stroke-dasharray="439.6"
+                        stroke-dashoffset="439.6">
+                </circle>
+            </svg>
+            <div class="circle-content">
+                <span id="confidencePercent" class="confidence-number">87%</span>
+                <span class="confidence-label">CONFIDENCE</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+                    <!-- Right Column -->
+                    <div class="results-right">
+                        <!-- Key Indicators -->
+                        <div class="indicators-section">
+                            <h4 class="indicators-title">
+                                <i class="fas fa-search"></i>
+                                Key Indicators Found
+                            </h4>
+                            <div id="indicators" class="indicators-content">
+                                Analysis in progress...
+                            </div>
+                        </div>
+                        
+                        <!-- Analysis Statistics -->
+                        <div class="stats-section">
+                            <h4 class="stats-title">
+                                <i class="fas fa-chart-bar"></i>
+                                Analysis Statistics
+                            </h4>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-label">Processing Time</span>
+                                    <span id="processingTime" class="stat-value">2.34s</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Model Used</span>
+                                    <span id="modelUsed" class="stat-value">DeepFake-v1</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">File Type</span>
+                                    <span id="fileTypeResult" class="stat-value">Image</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Detection Method</span>
+                                    <span id="detectionMethod" class="stat-value">Visual Analysis</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FIXED Action Buttons - Make sure re-analyze button exists -->
+                <div class="action-buttons">
+                    <button id="reanalyzeBtn" class="btn btn-warning">
+                        <i class="fas fa-redo"></i>
+                        Re-analyze File
+                    </button>
+                    <button id="analyzeNewBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Analyze New File
+                    </button>
+                    <button id="downloadReportBtn" class="btn btn-secondary">
+                        <i class="fas fa-download"></i>
+                        Download Report
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

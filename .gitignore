@@ -1,0 +1,232 @@
+# ===================================
+# Synthetic Media Detector .gitignore
+# ===================================
+
+# ============ Docker ============
+*.log
+docker-compose.override.yml
+.dockerignore
+
+# ============ Python ============
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+ml-env/
+.venv
+
+# Python distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# ============ Java/Spring Boot ============
+# Maven
+backend-java/target/
+backend-java/.mvn/
+backend-java/mvnw
+backend-java/mvnw.cmd
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Spring Boot
+*.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+HELP.md
+.springBeans
+.factorypath
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# ============ Machine Learning Models ============
+# Large model files (don't push to GitHub)
+models/**/*.bin
+models/**/*.h5
+models/**/*.pth
+models/**/*.pt
+models/**/*.onnx
+models/**/*.pb
+models/**/*.pkl
+models/**/*.joblib
+models/**/*.safetensors
+
+# Keep model directory structure but not model files
+!models/.gitkeep
+models/prithivMLmods/
+
+# Model cache
+.cache/
+*.cache
+
+# Hugging Face cache
+.huggingface/
+
+# ============ Temporary Files ============
+temp/
+tmp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Uploaded files during testing
+uploads/
+test-files/
+test-images/
+test-videos/
+test-audio/
+
+# ============ Environment Variables ============
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+*.env
+
+# ============ Logs ============
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# ============ OS Generated ============
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ============ Node.js (if applicable) ============
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# ============ Database ============
+*.sqlite
+*.sqlite3
+*.db
+
+# ============ Secrets & Credentials ============
+secrets/
+credentials/
+*.pem
+*.key
+*.cert
+*.crt
+private_key*
+api_keys.txt
+
+# ============ Docker Volumes ============
+volumes/
+data/
+
+# ============ IDE Specific ============
+.vscode/
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ============ Coverage Reports ============
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# ============ Documentation ============
+docs/_build/
+site/
+
+# ============ Backup Files ============
+*.bak
+*.backup
+*~.nib
