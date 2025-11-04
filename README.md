@@ -23,14 +23,6 @@
 
 **Synthetic Media Detector** is a full-stack web application that analyzes digital media to identify deepfakes and AI-generated content. Built with a modern microservices architecture, it provides real-time analysis with intuitive confidence scoring and detailed reporting.
 
-### 🎬 Demo
-
-🌐 Live Demo: Coming Soon
-
-📺 Video Demo: Watch on YouTube
-
-text
-
 ---
 
 ## ✨ Features
@@ -330,9 +322,9 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **Your Name**
 
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/YOUR_USERNAME)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/YOUR_PROFILE)
-[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:your.email@example.com)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/harshitsingh070)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/harshitsinggh070/)
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:your.harshitsingh2807@gmail.com)
 
 </div>
 
@@ -347,21 +339,11 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ---
 
-## 📞 Support
-
-Having issues? We're here to help!
-
-- 📧 **Email:** support@example.com
-- 🐛 **Bug Reports:** [Open an issue](https://github.com/YOUR_USERNAME/synthetic-media-detector/issues)
-- 💬 **Discussions:** [Join the discussion](https://github.com/YOUR_USERNAME/synthetic-media-detector/discussions)
-
----
-
 <div align="center">
 
 ### ⭐ Star this repository if you find it useful!
 
-**Made with ❤️ by [Harshit Singh](https://github.com/YOUR_USERNAME)**
+**Made with ❤️ by [Harshit Singh](https://github.com/harshitsingh070)**
 
 *Fighting misinformation, one detection at a time* 🛡️
 
