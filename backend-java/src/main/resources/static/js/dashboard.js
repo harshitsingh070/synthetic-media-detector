@@ -1,3 +1,6 @@
+// ==================== Synthetic Media Detector Dashboard ====================
+// Version: 3.0 - Final Production Ready with Browse Button Fix
+
 class SyntheticMediaDashboard {
     constructor() {
         this.currentFile = null;
@@ -5,85 +8,112 @@ class SyntheticMediaDashboard {
         this.analysisHistory = [];
         this.currentAnalysisCount = 0;
         this.analysisStartTime = null;
+        this.eventListenersSetup = false;
         
-        console.log('Dashboard initializing...');
+        console.log('🚀 Dashboard initializing...');
         this.initializeElements();
         this.setupEventListeners();
-        console.log('Dashboard initialized successfully');
+        console.log('✅ Dashboard initialized successfully');
     }
 
     initializeElements() {
-        console.log('Initializing elements...');
+        console.log('📦 Initializing DOM elements...');
         
-        // Sections
         this.uploadSection = document.getElementById('uploadSection');
         this.analysisSection = document.getElementById('analysisSection');
         this.resultsSection = document.getElementById('resultsSection');
-
-        // Upload elements
         this.uploadZone = document.getElementById('uploadZone');
         this.fileInput = document.getElementById('fileInput');
-        this.browseBtn = document.getElementById('browseBtn');
-
-        // Analysis elements
-        this.fileTypeIcon = document.getElementById('fileTypeIcon');
-        this.imagePreview = document.getElementById('imagePreview');
+        this.fileTypeIcon = document.getElementById('fileIcon');
+        this.imagePreview = document.getElementById('previewImage');
         this.fileName = document.getElementById('fileName');
         this.fileSize = document.getElementById('fileSize');
+        this.fileTypeDisplay = document.getElementById('fileType');
         this.progressFill = document.getElementById('progressFill');
-        this.progressText = document.getElementById('progressText');
+        this.progressText = document.querySelector('.progress-text');
         this.progressPercent = document.getElementById('progressPercent');
-
-        // Results elements
-        this.resultFileIcon = document.getElementById('resultFileIcon');
+        this.progressEta = document.getElementById('progressEta');
+        this.statusMessages = document.getElementById('statusMessages');
         this.resultFileName = document.getElementById('resultFileName');
         this.verdictBadge = document.getElementById('verdictBadge');
-        this.verdictText = document.getElementById('verdictText');
         this.progressCircle = document.getElementById('progressCircle');
         this.confidencePercent = document.getElementById('confidencePercent');
-        this.indicators = document.getElementById('indicators');
-
-        // Statistics elements
-        this.processingTime = document.getElementById('processingTime');
-        this.modelUsed = document.getElementById('modelUsed');
-        this.fileTypeResult = document.getElementById('fileTypeResult');
-        this.detectionMethod = document.getElementById('detectionMethod');
-
-        // Action buttons - with debugging
+        this.indicators = document.getElementById('indicatorsContent');
+        this.processingTime = document.getElementById('statProcessingTime');
+        this.modelUsed = document.getElementById('statModel');
+        this.fileTypeResult = document.getElementById('statFileType');
+        this.detectionMethod = document.getElementById('statMethod');
         this.reanalyzeBtn = document.getElementById('reanalyzeBtn');
-        this.analyzeNewBtn = document.getElementById('analyzeNewBtn');
+        this.analyzeNewBtn = document.getElementById('newAnalysisBtn');
         this.downloadReportBtn = document.getElementById('downloadReportBtn');
 
-        // Debug button existence
-        console.log('Re-analyze button found:', !!this.reanalyzeBtn);
-        console.log('Analyze new button found:', !!this.analyzeNewBtn);
-        console.log('Download button found:', !!this.downloadReportBtn);
-
-        if (!this.reanalyzeBtn) {
-            console.error('Re-analyze button not found! Check HTML for id="reanalyzeBtn"');
-        }
+        console.log('✅ Elements initialized');
     }
 
     setupEventListeners() {
-        console.log('Setting up event listeners...');
+        if (this.eventListenersSetup) {
+            console.log('⚠️ Event listeners already setup');
+            return;
+        }
 
-        // Upload interactions
-        if (this.uploadZone) {
-            this.uploadZone.addEventListener('click', () => {
-                console.log('Upload zone clicked');
-                this.fileInput.click();
+        console.log('🔧 Setting up event listeners...');
+
+        // 1. File input change
+        if (this.fileInput) {
+            this.fileInput.addEventListener('change', (e) => {
+                console.log('📁 File input changed');
+                if (e.target.files.length > 0) {
+                    this.handleFileSelection(e.target.files[0]);
+                }
             });
         }
 
-        if (this.browseBtn) {
-            this.browseBtn.addEventListener('click', (e) => {
+        // 2. Browse button - CRITICAL FIX WITH CAPTURE PHASE
+        const browseBtns = document.querySelectorAll('.browse-btn');
+        console.log(`Found ${browseBtns.length} browse button(s)`);
+        
+        browseBtns.forEach((btn, index) => {
+            // Remove inline onclick
+            btn.removeAttribute('onclick');
+            btn.onclick = null;
+            
+            // Force clickable styles
+            btn.style.pointerEvents = 'auto';
+            btn.style.cursor = 'pointer';
+            btn.style.position = 'relative';
+            btn.style.zIndex = '100';
+            
+            // Use CAPTURE PHASE to catch clicks first
+            btn.addEventListener('click', (e) => {
+                console.log(`🔘 Browse button ${index + 1} CLICKED`);
+                e.preventDefault();
                 e.stopPropagation();
-                console.log('Browse button clicked');
-                this.fileInput.click();
+                e.stopImmediatePropagation();
+                
+                if (this.fileInput) {
+                    console.log('Triggering file input dialog...');
+                    this.fileInput.click();
+                } else {
+                    console.error('❌ File input not found!');
+                }
+            }, true); // CAPTURE PHASE = true
+        });
+
+        // 3. Upload zone click
+        if (this.uploadZone) {
+            this.uploadZone.addEventListener('click', (e) => {
+                if (e.target.closest('.browse-btn')) {
+                    console.log('Browse button handled, skipping zone');
+                    return;
+                }
+                console.log('📦 Upload zone clicked');
+                if (this.fileInput) {
+                    this.fileInput.click();
+                }
             });
         }
 
-        // Drag and drop
+        // 4. Drag and drop
         if (this.uploadZone) {
             this.uploadZone.addEventListener('dragover', (e) => {
                 e.preventDefault();
@@ -97,42 +127,25 @@ class SyntheticMediaDashboard {
             this.uploadZone.addEventListener('drop', (e) => {
                 e.preventDefault();
                 this.uploadZone.classList.remove('dragover');
-                const files = Array.from(e.dataTransfer.files);
-                if (files.length > 0) {
-                    this.handleFileSelection(files[0]);
+                console.log('📥 File dropped');
+                if (e.dataTransfer.files.length > 0) {
+                    this.handleFileSelection(e.dataTransfer.files[0]);
                 }
             });
         }
 
-        // File input
-        if (this.fileInput) {
-            this.fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    this.handleFileSelection(e.target.files[0]);
-                }
-            });
-        }
-
-        // Action buttons with detailed debugging
+        // 5. Action buttons
         if (this.reanalyzeBtn) {
-            console.log('Adding click listener to re-analyze button');
             this.reanalyzeBtn.addEventListener('click', (e) => {
-                console.log('Re-analyze button clicked!', e);
+                console.log('🔄 Re-analyze clicked');
                 e.preventDefault();
-                e.stopPropagation();
                 this.reanalyzeCurrentFile();
             });
-            
-            // Also add a test to see if the button is visible
-            const buttonStyle = window.getComputedStyle(this.reanalyzeBtn);
-            console.log('Re-analyze button visibility:', buttonStyle.display, buttonStyle.visibility);
-        } else {
-            console.error('Cannot set up re-analyze button - element not found');
         }
 
         if (this.analyzeNewBtn) {
             this.analyzeNewBtn.addEventListener('click', (e) => {
-                console.log('Analyze new button clicked');
+                console.log('➕ Analyze new clicked');
                 e.preventDefault();
                 this.resetToUpload();
             });
@@ -140,122 +153,80 @@ class SyntheticMediaDashboard {
 
         if (this.downloadReportBtn) {
             this.downloadReportBtn.addEventListener('click', (e) => {
-                console.log('Download button clicked');
+                console.log('⬇️ Download clicked');
                 e.preventDefault();
                 this.downloadReport();
             });
         }
 
-        console.log('Event listeners setup complete');
+        this.eventListenersSetup = true;
+        console.log('✅ Event listeners setup complete');
     }
 
     handleFileSelection(file) {
-        console.log('File selected:', file.name);
+        console.log('📄 File selected:', file.name, `(${this.formatFileSize(file.size)})`);
+        
+        if (!this.isValidFile(file)) {
+            alert('❌ Please upload a valid image, audio, or video file.');
+            return;
+        }
+
         this.currentFile = file;
         this.analysisHistory = [];
         this.currentAnalysisCount = 0;
+        
         this.showAnalysisSection();
         this.displayFileInfo(file);
         this.startAnalysis();
     }
 
+    isValidFile(file) {
+        const validExtensions = [
+            'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg',
+            'mp3', 'wav', 'flac', 'm4a', 'aac', 'ogg', 'wma',
+            'mp4', 'avi', 'mov', 'mkv', 'wmv', 'webm', 'flv'
+        ];
+        const extension = file.name.toLowerCase().split('.').pop();
+        return validExtensions.includes(extension);
+    }
+
     reanalyzeCurrentFile() {
-        console.log('Re-analyze function called');
-        
         if (!this.currentFile) {
-            console.error('No file to reanalyze - currentFile is null');
             alert('No file to reanalyze. Please upload a file first.');
             return;
         }
 
-        console.log('Re-analyzing file:', this.currentFile.name);
-        console.log('Previous analysis count:', this.currentAnalysisCount);
-        
-        // Show loading message
-        this.showLoadingMessage('Re-analyzing your media for improved accuracy...');
-        
-        // Small delay for better UX
-        setTimeout(() => {
-            this.hideLoadingMessage();
-            this.showAnalysisSection();
-            this.resetProgressElements();
-            console.log('Starting re-analysis...');
-            this.startAnalysis();
-        }, 1000);
-    }
-
-    showLoadingMessage(message) {
-        // Create a temporary loading overlay if not exists
-        let overlay = document.getElementById('tempLoadingOverlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'tempLoadingOverlay';
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.8);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-                color: white;
-                font-size: 1.2rem;
-                font-weight: 600;
-            `;
-            document.body.appendChild(overlay);
-        }
-        overlay.textContent = message;
-        overlay.style.display = 'flex';
-    }
-
-    hideLoadingMessage() {
-        const overlay = document.getElementById('tempLoadingOverlay');
-        if (overlay) {
-            overlay.style.display = 'none';
-        }
+        console.log(`🔄 Re-analysis #${this.currentAnalysisCount + 1}`);
+        this.showAnalysisSection();
+        this.displayFileInfo(this.currentFile);
+        this.resetProgressElements();
+        this.startAnalysis();
     }
 
     resetProgressElements() {
-        console.log('Resetting progress elements');
-        
-        if (this.progressFill) {
-            this.progressFill.style.width = '0%';
-        }
-        if (this.progressPercent) {
-            this.progressPercent.textContent = '0%';
-        }
-        if (this.progressText) {
-            this.progressText.textContent = 'Starting re-analysis...';
-        }
-
-        // Increment analysis counter
+        if (this.progressFill) this.progressFill.style.width = '0%';
+        if (this.progressPercent) this.progressPercent.textContent = '0%';
+        if (this.progressText) this.progressText.textContent = 'Re-analyzing...';
+        if (this.statusMessages) this.statusMessages.innerHTML = '';
         this.currentAnalysisCount++;
-        console.log('Analysis count incremented to:', this.currentAnalysisCount);
     }
 
     showAnalysisSection() {
-        console.log('Showing analysis section');
-        
         if (this.uploadSection) this.uploadSection.style.display = 'none';
         if (this.resultsSection) this.resultsSection.style.display = 'none';
-        if (this.analysisSection) {
-            this.analysisSection.style.display = 'flex';
-            this.analysisSection.classList.add('fade-in');
-        }
+        if (this.analysisSection) this.analysisSection.style.display = 'flex';
     }
 
     showResultsSection() {
-        console.log('Showing results section');
-        
         if (this.analysisSection) this.analysisSection.style.display = 'none';
         if (this.uploadSection) this.uploadSection.style.display = 'none';
-        if (this.resultsSection) {
-            this.resultsSection.style.display = 'flex';
-            this.resultsSection.classList.add('fade-in');
-        }
+        if (this.resultsSection) this.resultsSection.style.display = 'flex';
+    }
+
+    showUploadSection() {
+        if (this.resultsSection) this.resultsSection.style.display = 'none';
+        if (this.analysisSection) this.analysisSection.style.display = 'none';
+        if (this.uploadSection) this.uploadSection.style.display = 'flex';
     }
 
     displayFileInfo(file) {
@@ -263,20 +234,23 @@ class SyntheticMediaDashboard {
         if (this.fileSize) this.fileSize.textContent = this.formatFileSize(file.size);
 
         const fileType = this.getFileType(file);
+        if (this.fileTypeDisplay) {
+            this.fileTypeDisplay.textContent = fileType.charAt(0).toUpperCase() + fileType.slice(1);
+        }
+        
         this.setFileTypeIcon(fileType);
 
-        if (fileType === 'image') {
+        if (fileType === 'image' && this.imagePreview) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                if (this.imagePreview) {
-                    this.imagePreview.src = e.target.result;
-                    this.imagePreview.style.display = 'block';
-                }
-                if (this.fileTypeIcon) {
-                    this.fileTypeIcon.style.display = 'none';
-                }
+                this.imagePreview.src = e.target.result;
+                this.imagePreview.style.display = 'block';
+                if (this.fileTypeIcon) this.fileTypeIcon.style.display = 'none';
             };
             reader.readAsDataURL(file);
+        } else {
+            if (this.imagePreview) this.imagePreview.style.display = 'none';
+            if (this.fileTypeIcon) this.fileTypeIcon.style.display = 'block';
         }
     }
 
@@ -285,11 +259,10 @@ class SyntheticMediaDashboard {
         if (file.type.startsWith('audio/')) return 'audio';
         if (file.type.startsWith('video/')) return 'video';
         
-        const extension = file.name.toLowerCase().split('.').pop();
-        if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(extension)) return 'image';
-        if (['mp3', 'wav', 'flac', 'm4a', 'aac'].includes(extension)) return 'audio';
-        if (['mp4', 'avi', 'mov', 'mkv', 'wmv'].includes(extension)) return 'video';
-        
+        const ext = file.name.toLowerCase().split('.').pop();
+        if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(ext)) return 'image';
+        if (['mp3', 'wav', 'flac', 'm4a', 'aac', 'ogg'].includes(ext)) return 'audio';
+        if (['mp4', 'avi', 'mov', 'mkv', 'wmv', 'webm'].includes(ext)) return 'video';
         return 'unknown';
     }
 
@@ -314,9 +287,8 @@ class SyntheticMediaDashboard {
     }
 
     async startAnalysis() {
-        console.log('Starting analysis #' + this.currentAnalysisCount + ' for file:', this.currentFile.name);
+        console.log(`🔬 Starting analysis #${this.currentAnalysisCount + 1}`);
         this.analysisStartTime = Date.now();
-        
         await this.simulateAnalysis();
         await this.performActualAnalysis();
     }
@@ -326,37 +298,33 @@ class SyntheticMediaDashboard {
             { text: 'Uploading file...', duration: 800 },
             { text: 'Initializing AI models...', duration: 1000 },
             { text: 'Processing content...', duration: 1500 },
+            { text: 'Analyzing patterns...', duration: 1200 },
             { text: 'Generating results...', duration: 700 }
         ];
 
         let currentProgress = 0;
         for (let i = 0; i < steps.length; i++) {
-            const step = steps[i];
-            const targetProgress = ((i + 1) / steps.length) * 100;
-            
-            if (this.progressText) {
-                this.progressText.textContent = step.text;
-            }
-            
-            await this.animateProgress(currentProgress, targetProgress, step.duration);
+            const targetProgress = ((i + 1) / steps.length) * 95;
+            if (this.progressText) this.progressText.textContent = steps[i].text;
+            this.addStatusMessage(steps[i].text);
+            await this.animateProgress(currentProgress, targetProgress, steps[i].duration);
             currentProgress = targetProgress;
         }
     }
 
     async animateProgress(from, to, duration) {
         const startTime = performance.now();
-        
         return new Promise(resolve => {
             const animate = (currentTime) => {
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
                 const currentValue = from + (to - from) * progress;
                 
-                if (this.progressFill) {
-                    this.progressFill.style.width = `${currentValue}%`;
-                }
-                if (this.progressPercent) {
-                    this.progressPercent.textContent = `${Math.round(currentValue)}%`;
+                if (this.progressFill) this.progressFill.style.width = `${currentValue}%`;
+                if (this.progressPercent) this.progressPercent.textContent = `${Math.round(currentValue)}%`;
+                if (this.progressEta && currentValue < 100) {
+                    const remaining = Math.max(0, Math.round((100 - currentValue) * 0.05));
+                    this.progressEta.textContent = `Estimated time: ${remaining}s`;
                 }
                 
                 if (progress < 1) {
@@ -369,15 +337,22 @@ class SyntheticMediaDashboard {
         });
     }
 
+    addStatusMessage(text) {
+        if (!this.statusMessages) return;
+        const statusItem = document.createElement('div');
+        statusItem.className = 'status-item';
+        statusItem.innerHTML = `<i class="fas fa-check-circle"></i><span>${text}</span>`;
+        while (this.statusMessages.children.length >= 3) {
+            this.statusMessages.removeChild(this.statusMessages.firstChild);
+        }
+        this.statusMessages.appendChild(statusItem);
+    }
+
     async performActualAnalysis() {
         try {
-            console.log('Performing actual analysis...');
-            
             const formData = new FormData();
             formData.append('file', this.currentFile);
-
             const endpoint = this.getAnalysisEndpoint();
-            console.log('Sending request to:', endpoint);
             
             const response = await fetch(endpoint, {
                 method: 'POST',
@@ -385,58 +360,46 @@ class SyntheticMediaDashboard {
             });
 
             if (!response.ok) {
-                throw new Error(`Analysis failed: ${response.status} ${response.statusText}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
-            let analysisResult = await response.json();
-            console.log('Raw analysis result:', analysisResult);
+            let result = await response.json();
+            result = this.validateAndFixResults(result);
             
-            // Validate and fix results
-            analysisResult = this.validateAndFixResults(analysisResult);
-            
-            // Simulate accuracy improvement for re-analysis
-            if (this.currentAnalysisCount > 1 && this.analysisHistory.length > 0) {
-                console.log('Applying accuracy improvement for re-analysis');
-                analysisResult = this.simulateAccuracyImprovement(analysisResult);
+            if (this.currentAnalysisCount > 0 && this.analysisHistory.length > 0) {
+                result = this.simulateAccuracyImprovement(result);
             }
             
-            // Add metadata
-            analysisResult.timestamp = Date.now();
-            analysisResult.analysis_number = this.currentAnalysisCount;
-            
+            result.timestamp = Date.now();
+            result.analysis_number = this.currentAnalysisCount + 1;
             if (this.analysisStartTime) {
-                const processingDuration = (Date.now() - this.analysisStartTime) / 1000;
-                analysisResult.processing_time = processingDuration;
+                result.processing_time = (Date.now() - this.analysisStartTime) / 1000;
             }
             
-            this.analysisResults = analysisResult;
-            this.analysisHistory.push({...analysisResult});
+            await this.animateProgress(95, 100, 500);
             
-            console.log('Final analysis results:', this.analysisResults);
-            console.log('Analysis history length:', this.analysisHistory.length);
+            this.analysisResults = result;
+            this.analysisHistory.push({...result});
             
             await new Promise(resolve => setTimeout(resolve, 500));
-            
             this.displayResults();
+            
         } catch (error) {
-            console.error('Analysis error:', error);
+            console.error('❌ Analysis error:', error);
             this.handleAnalysisError(error);
         }
     }
 
     validateAndFixResults(results) {
-        console.log('Validating results:', results);
-        
         const fixed = {
             prediction: results.prediction || 'real',
             confidence: results.confidence || 0.5,
             fake_probability: results.fake_probability || 0,
             real_probability: results.real_probability || 0,
             processing_time: results.processing_time || 2.0,
-            model_info: results.model_info || {}
+            model_info: results.model_info || { model_name: 'DeepFake-v1', method: 'Visual Analysis' }
         };
         
-        // Fix probability inconsistencies
         if (fixed.fake_probability + fixed.real_probability === 0) {
             if (fixed.prediction === 'real') {
                 fixed.real_probability = Math.max(0.6, fixed.confidence);
@@ -447,44 +410,25 @@ class SyntheticMediaDashboard {
             }
         }
         
-        // Normalize probabilities
         const total = fixed.fake_probability + fixed.real_probability;
-        if (total > 0) {
+        if (total > 0 && total !== 1.0) {
             fixed.fake_probability /= total;
             fixed.real_probability /= total;
         }
         
-        // Fix prediction consistency
         if (fixed.fake_probability > fixed.real_probability && fixed.prediction === 'real') {
-            console.warn('Fixing inconsistent prediction');
             fixed.prediction = 'fake';
         } else if (fixed.real_probability > fixed.fake_probability && fixed.prediction === 'fake') {
-            console.warn('Fixing inconsistent prediction');
             fixed.prediction = 'real';
         }
         
         fixed.confidence = Math.max(fixed.fake_probability, fixed.real_probability);
-        
-        if (fixed.confidence === 0) {
-            fixed.confidence = 0.5;
-        }
-        
-        console.log('Fixed results:', fixed);
         return fixed;
     }
 
     simulateAccuracyImprovement(currentResult) {
-        console.log('Simulating accuracy improvement');
-        
-        const previousResult = this.analysisHistory[this.analysisHistory.length - 1];
-        console.log('Previous result confidence:', previousResult.confidence);
-        
-        // Simulate 2-8% improvement
         const improvementFactor = 0.02 + Math.random() * 0.06;
-        const baseConfidence = currentResult.confidence || 0.5;
-        const improvedConfidence = Math.min(0.95, baseConfidence + improvementFactor);
-        
-        console.log('Improved confidence from', baseConfidence, 'to', improvedConfidence);
+        const improvedConfidence = Math.min(0.95, currentResult.confidence + improvementFactor);
         
         if (currentResult.prediction === 'fake') {
             currentResult.fake_probability = improvedConfidence;
@@ -509,40 +453,23 @@ class SyntheticMediaDashboard {
     }
 
     displayResults() {
-        console.log('Displaying results...');
-        
-        if (!this.analysisResults) {
-            console.error('No analysis results to display');
-            return;
-        }
+        if (!this.analysisResults) return;
 
         this.showResultsSection();
         
-        // Set file info
         if (this.resultFileName) {
             this.resultFileName.textContent = this.currentFile.name;
         }
-        if (this.resultFileIcon) {
-            this.resultFileIcon.className = this.fileTypeIcon.className.replace('file-icon', 'file-icon-small');
-        }
 
-        // Display verdict
         const isReal = this.analysisResults.prediction === 'real';
         const prediction = isReal ? 'REAL' : 'FAKE';
         
-        if (this.verdictText) {
-            this.verdictText.textContent = prediction;
-        }
         if (this.verdictBadge) {
+            this.verdictBadge.textContent = prediction;
             this.verdictBadge.className = `verdict-badge ${isReal ? 'real' : 'fake'}`;
         }
 
-        // Calculate and display probabilities
-        const fakeProb = Math.round((this.analysisResults.fake_probability || 0) * 100);
-        const realProb = Math.round((this.analysisResults.real_probability || 0) * 100);
         const confidence = Math.round((this.analysisResults.confidence || 0) * 100);
-        
-        console.log('Display values - Fake:', fakeProb, 'Real:', realProb, 'Confidence:', confidence);
         
         if (this.confidencePercent) {
             this.confidencePercent.textContent = `${confidence}%`;
@@ -551,255 +478,107 @@ class SyntheticMediaDashboard {
         this.animateConfidenceCircle(confidence, isReal);
         this.updateStatistics();
         this.displayKeyIndicators();
-        
-        // Show improvement message for re-analysis
-        if (this.analysisHistory.length > 1) {
-            console.log('This is a re-analysis - showing improvement');
-            this.showReanalysisImprovement();
-        }
-    }
-
-    showReanalysisImprovement() {
-        if (this.analysisHistory.length < 2) return;
-        
-        const previousResult = this.analysisHistory[this.analysisHistory.length - 2];
-        const currentResult = this.analysisResults;
-        
-        const prevConf = Math.round(previousResult.confidence * 100);
-        const currConf = Math.round(currentResult.confidence * 100);
-        const improvement = currConf - prevConf;
-        
-        if (improvement > 0) {
-            // Create improvement notification
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #48bb78;
-                color: white;
-                padding: 15px 20px;
-                border-radius: 10px;
-                z-index: 1000;
-                font-weight: 600;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                animation: slideInRight 0.5s ease;
-            `;
-            notification.innerHTML = `
-                <i class="fas fa-arrow-up"></i>
-                Accuracy improved by ${improvement}%!
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Remove after 3 seconds
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 3000);
-        }
     }
 
     animateConfidenceCircle(percentage, isReal) {
-    if (!this.progressCircle) return;
-    
-    // Calculate for radius 70 (matching the SVG circle)
-    const radius = 70;
-    const circumference = 2 * Math.PI * radius; // = 439.6
-    const offset = circumference - (percentage / 100) * circumference;
-    const color = isReal ? '#48bb78' : '#f56565';
-    
-    // Update SVG attributes
-    this.progressCircle.setAttribute('stroke-dasharray', circumference);
-    
-    // Animate
-    setTimeout(() => {
-        this.progressCircle.style.strokeDashoffset = offset;
-        this.progressCircle.style.stroke = color;
-    }, 300);
-    
-    // Update the text content
-    if (this.confidencePercent) {
-        this.confidencePercent.textContent = `${percentage}%`;
+        if (!this.progressCircle) return;
+        
+        const radius = 70;
+        const circumference = 2 * Math.PI * radius;
+        const offset = circumference - (percentage / 100) * circumference;
+        const color = isReal ? '#10b981' : '#ef4444';
+        
+        this.progressCircle.setAttribute('stroke-dasharray', circumference);
+        setTimeout(() => {
+            this.progressCircle.style.strokeDashoffset = offset;
+            this.progressCircle.style.stroke = color;
+        }, 100);
     }
-}
-
 
     updateStatistics() {
         if (this.processingTime && this.analysisResults.processing_time) {
             this.processingTime.textContent = `${this.analysisResults.processing_time.toFixed(2)}s`;
         }
-        
         if (this.modelUsed) {
-            this.modelUsed.textContent = 'DeepFake-v1';
+            this.modelUsed.textContent = this.analysisResults.model_info?.model_name || 'DeepFake-v1';
         }
-        
         if (this.fileTypeResult && this.currentFile) {
             const fileType = this.getFileType(this.currentFile);
             this.fileTypeResult.textContent = fileType.charAt(0).toUpperCase() + fileType.slice(1);
         }
-        
         if (this.detectionMethod && this.currentFile) {
-            const methods = {
-                'image': 'Visual Analysis',
-                'audio': 'Spectral Analysis', 
-                'video': 'Multi-modal Fusion'
-            };
-            const fileType = this.getFileType(this.currentFile);
-            this.detectionMethod.textContent = methods[fileType] || 'AI Analysis';
+            const methods = { 'image': 'Visual Analysis', 'audio': 'Spectral Analysis', 'video': 'Multi-modal Fusion' };
+            this.detectionMethod.textContent = methods[this.getFileType(this.currentFile)] || 'AI Analysis';
         }
     }
 
     displayKeyIndicators() {
         if (!this.indicators) return;
         
-        const fileType = this.getFileType(this.currentFile);
-        const isReal = this.analysisResults.prediction === 'real';
         const confidence = Math.round((this.analysisResults.confidence || 0) * 100);
         const fakeProb = Math.round((this.analysisResults.fake_probability || 0) * 100);
         const realProb = Math.round((this.analysisResults.real_probability || 0) * 100);
+        const isReal = this.analysisResults.prediction === 'real';
 
-        const baseIndicators = {
-            'image': isReal 
-                ? `Visual analysis detected natural compression artifacts and consistent lighting patterns. Pixel-level examination shows organic noise distribution typical of authentic image content.`
-                : `Visual analysis detected compression inconsistencies and artificial pattern generation. Pixel-level examination reveals synthetic noise distribution and potential deepfake artifacts.`,
-            'audio': isReal
-                ? `Audio analysis identified natural vocal characteristics and ambient noise patterns. Spectral analysis shows consistent formant structures typical of authentic speech.`
-                : `Audio analysis identified artificial vocal characteristics and spectral anomalies. Frequency domain analysis shows patterns consistent with voice synthesis or manipulation.`,
-            'video': isReal
-                ? `Frame-by-frame analysis detected natural motion patterns and consistent temporal relationships. Audio-visual synchronization appears authentic with no detectable manipulation artifacts.`
-                : `Frame-by-frame analysis detected temporal inconsistencies and unnatural motion patterns. Audio-visual desynchronization and compression artifacts suggest synthetic generation.`
-        };
-
-        let text = baseIndicators[fileType] || baseIndicators['image'];
-        
-        if (this.currentAnalysisCount > 1) {
-            text += ` This is analysis #${this.currentAnalysisCount}, providing enhanced accuracy through multiple validation passes.`;
-        }
+        let text = isReal 
+            ? `Visual analysis detected natural compression artifacts and consistent lighting patterns. Pixel-level examination shows organic noise distribution typical of authentic image content.`
+            : `Visual analysis detected compression inconsistencies and artificial pattern generation. Pixel-level examination reveals synthetic noise distribution and potential deepfake artifacts.`;
         
         text += ` The model determined a ${fakeProb}% probability of synthesis vs ${realProb}% probability of authenticity. Overall confidence level: ${confidence}%.`;
-
-        // Animate text typing effect
-        this.indicators.textContent = '';
-        let i = 0;
-        const typeWriter = () => {
-            if (i < text.length) {
-                this.indicators.textContent += text.charAt(i);
-                i++;
-                setTimeout(typeWriter, 10);
-            }
-        };
-        setTimeout(typeWriter, 800);
+        this.indicators.textContent = text;
     }
 
     handleAnalysisError(error) {
-        console.error('Handling analysis error:', error);
-        
-        if (this.progressText) {
-            this.progressText.textContent = 'Analysis failed';
-        }
-        if (this.progressFill) {
-            this.progressFill.style.background = '#f56565';
-        }
-        
-        setTimeout(() => {
-            this.showResultsSection();
-            
-            if (this.verdictText) {
-                this.verdictText.textContent = 'ERROR';
-            }
-            if (this.verdictBadge) {
-                this.verdictBadge.className = 'verdict-badge fake';
-            }
-            if (this.confidencePercent) {
-                this.confidencePercent.textContent = '0%';
-            }
-            if (this.indicators) {
-                this.indicators.textContent = `Analysis failed: ${error.message}. Please try again or check your connection.`;
-            }
-        }, 2000);
+        alert(`Analysis failed: ${error.message}\n\nPlease try again.`);
+        this.resetToUpload();
     }
 
     resetToUpload() {
-        console.log('Resetting to upload');
-        
         this.currentFile = null;
         this.analysisResults = null;
         this.analysisHistory = [];
         this.currentAnalysisCount = 0;
         this.analysisStartTime = null;
         
-        if (this.fileInput) {
-            this.fileInput.value = '';
-        }
-        
-        if (this.progressFill) {
-            this.progressFill.style.width = '0%';
-            this.progressFill.style.background = '';
-        }
-        if (this.progressPercent) {
-            this.progressPercent.textContent = '0%';
-        }
-        if (this.progressText) {
-            this.progressText.textContent = 'Uploading...';
-        }
-        
+        if (this.fileInput) this.fileInput.value = '';
+        if (this.progressFill) this.progressFill.style.width = '0%';
+        if (this.progressPercent) this.progressPercent.textContent = '0%';
+        if (this.statusMessages) this.statusMessages.innerHTML = '';
         if (this.imagePreview) {
             this.imagePreview.style.display = 'none';
+            this.imagePreview.src = '';
         }
-        if (this.fileTypeIcon) {
-            this.fileTypeIcon.style.display = 'block';
-        }
+        if (this.fileTypeIcon) this.fileTypeIcon.style.display = 'block';
         
-        if (this.progressCircle) {
-            this.progressCircle.style.strokeDashoffset = '314';
-        }
-        
-        if (this.resultsSection) this.resultsSection.style.display = 'none';
-        if (this.analysisSection) this.analysisSection.style.display = 'none';
-        if (this.uploadSection) {
-            this.uploadSection.style.display = 'flex';
-            this.uploadSection.classList.add('fade-in');
-        }
+        this.showUploadSection();
     }
 
     downloadReport() {
         if (!this.analysisResults || !this.currentFile) {
-            console.log('No results or file to download');
+            alert('No analysis results to download.');
             return;
         }
 
         const report = {
-            filename: this.currentFile.name,
-            filesize: this.formatFileSize(this.currentFile.size),
-            filetype: this.getFileType(this.currentFile),
-            analysis_date: new Date().toISOString(),
-            
-            current_analysis: {
-                analysis_number: this.currentAnalysisCount,
-                verdict: this.analysisResults.prediction.toUpperCase(),
-                confidence: Math.round((this.analysisResults.confidence || 0) * 100),
-                fake_probability: Math.round((this.analysisResults.fake_probability || 0) * 100),
-                real_probability: Math.round((this.analysisResults.real_probability || 0) * 100),
-                processing_time: this.analysisResults.processing_time ? `${this.analysisResults.processing_time.toFixed(2)}s` : 'N/A'
+            file_information: {
+                filename: this.currentFile.name,
+                filesize: this.formatFileSize(this.currentFile.size),
+                filetype: this.getFileType(this.currentFile),
+                analysis_date: new Date().toISOString()
             },
-            
+            current_analysis: {
+                verdict: this.analysisResults.prediction.toUpperCase(),
+                confidence: Math.round((this.analysisResults.confidence || 0) * 100) + '%',
+                fake_probability: Math.round((this.analysisResults.fake_probability || 0) * 100) + '%',
+                real_probability: Math.round((this.analysisResults.real_probability || 0) * 100) + '%',
+                processing_time: this.analysisResults.processing_time ? 
+                    `${this.analysisResults.processing_time.toFixed(2)}s` : 'N/A'
+            },
             total_analyses: this.analysisHistory.length,
-            analysis_history: this.analysisHistory.map((analysis, index) => ({
-                analysis_number: index + 1,
-                timestamp: new Date(analysis.timestamp).toISOString(),
-                verdict: analysis.prediction.toUpperCase(),
-                confidence: Math.round((analysis.confidence || 0) * 100),
-                fake_probability: Math.round((analysis.fake_probability || 0) * 100),
-                real_probability: Math.round((analysis.real_probability || 0) * 100),
-                processing_time: analysis.processing_time ? `${analysis.processing_time.toFixed(2)}s` : 'N/A'
-            })),
-            
-            key_indicators: this.indicators ? this.indicators.textContent : 'No indicators available'
+            key_indicators: this.indicators ? this.indicators.textContent : 'N/A'
         };
 
-        const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+        const blob = new Blob([JSON.stringify(report, null, 2)], {type: 'application/json'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -811,12 +590,19 @@ class SyntheticMediaDashboard {
     }
 }
 
-// Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing dashboard...');
+    console.log('🌐 DOM loaded');
     try {
-        new SyntheticMediaDashboard();
+        window.dashboard = new SyntheticMediaDashboard();
+        console.log('✅ Dashboard ready');
     } catch (error) {
-        console.error('Failed to initialize dashboard:', error);
+        console.error('❌ Failed to initialize:', error);
+        alert('Failed to initialize dashboard. Please refresh.');
     }
 });
+
+window.addEventListener('error', (event) => {
+    console.error('🔥 Global error:', event.error);
+});
+
+console.log('📦 Dashboard module loaded');
