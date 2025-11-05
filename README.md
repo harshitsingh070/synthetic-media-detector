@@ -21,6 +21,13 @@
 
 ## 🎯 Overview
 
+<img width="1923" height="926" alt="Screenshot 2025-11-04 213839" src="https://github.com/user-attachments/assets/7f7c922e-ddc0-4999-aef1-e835d47623bc" />
+
+
+https://github.com/user-attachments/assets/f5374ad9-a7e7-42b0-a3df-426156ead6e3
+
+
+
 **Synthetic Media Detector** is a full-stack web application that analyzes digital media to identify deepfakes and AI-generated content. Built with a modern microservices architecture, it provides real-time analysis with intuitive confidence scoring and detailed reporting.
 
 ---
